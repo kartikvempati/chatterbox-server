@@ -38,6 +38,10 @@ var requestHandler = function(request, response) {
       response.writeHead(200, {'Content-Type': 'text/plain'});
       response.end(JSON.stringify(obj));
 
+    } else {
+      response.writeHead(404, {'Content-Type': 'text/plain'});
+      console.log('404');
+      response.end();
     }
   } else if (request.method === 'POST') {
     if(request.url === '/classes/messages') {
@@ -52,7 +56,6 @@ var requestHandler = function(request, response) {
         console.log("request body is a regular object", requestBody);
         // requestBody is an object
         obj['results'].push(JSON.parse(requestBody));
-        console.log(obj['results']);
 
         var body = JSON.stringify(obj);
         // console.log("this is the stringified obj: ", body);
@@ -62,14 +65,17 @@ var requestHandler = function(request, response) {
       });
       //now our request body contains received data
       //error statement for too large of a data set
+
     } else {
-      console.log("no data")
+      response.writeHead(404, {'Content-Type': 'text/plain'});
+      console.log('404');
+      response.end();
     }
   } 
 
 
   // The outgoing status.
-  var statusCode = 200;
+  // var statusCode = 200;
 
   // See the note below about CORS headers.
    var headers = defaultCorsHeaders;
