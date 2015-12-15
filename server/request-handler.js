@@ -12,8 +12,10 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var obj = {};
+obj['results'] = [];
 
-exports.requestHandler = function(request, response) {
+var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -24,27 +26,63 @@ exports.requestHandler = function(request, response) {
   // http://nodejs.org/documentation/api/
 
   // Do some basic logging.
-  //
+  
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
 
+
+  if(request.method === 'GET'){
+    if(request.url === '/classes/messages') {
+      response.writeHead(200, {'Content-Type': 'text/plain'});
+      response.end(JSON.stringify(obj));
+
+    }
+  } else if (request.method === 'POST') {
+    if(request.url === '/classes/messages') {
+
+      //create a requestBody that will be an empty string
+      var requestBody;    
+      //go through the data and add it to request body
+      response.writeHead(201, {'Content-Type': 'text/plain'});
+      request.on('data', function(data) {
+        // data.toString is to get out of the buffer object
+        requestBody = data.toString();
+        console.log("request body is a regular object", requestBody);
+        // requestBody is an object
+        obj['results'].push(JSON.parse(requestBody));
+        console.log(obj['results']);
+
+        var body = JSON.stringify(obj);
+        // console.log("this is the stringified obj: ", body);
+        // console.log("parsed: ", JSON.parse(body).results)
+
+        response.end(body);
+      });
+      //now our request body contains received data
+      //error statement for too large of a data set
+    } else {
+      console.log("no data")
+    }
+  } 
+
+
   // The outgoing status.
   var statusCode = 200;
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+   var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = "text/plain";
+   headers['Content-Type'] = "text/plain";
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  // response.writeHead(statusCode, headers);
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -53,8 +91,11 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
+  // response.end("Hello, World!");
 };
+
+module.exports = requestHandler;
+
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -65,7 +106,7 @@ exports.requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-exports.defaultCorsHeaders = {
+var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "content-type, accept",
