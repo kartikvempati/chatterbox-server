@@ -163,7 +163,7 @@ var app = {
       $message.text(data.text).appendTo($chat);
 
       // Add the message to the UI
-      app.$chats.append($chat);
+      app.$chats.prepend($chat);
     }
   },
 
@@ -219,7 +219,7 @@ var app = {
     };
 
     app.send(message);
-    app.populateMessages(data.results, animate);
+    app.populateMessages(data.results);
 
     // Stop the form from submitting
     evt.preventDefault();
