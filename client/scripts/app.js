@@ -64,7 +64,7 @@ var app = {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
         // Get the last message
-        console.log("DATA EXISTS!")
+        console.log("DATA EXISTS!");
         var mostRecentMessage = data.results[data.results.length-1];
         var displayedRoom = $('.chat span').first().data('roomname');
         // app.stopSpinner();
@@ -219,6 +219,7 @@ var app = {
     };
 
     app.send(message);
+    app.populateMessages(data.results, animate);
 
     // Stop the form from submitting
     evt.preventDefault();
@@ -234,3 +235,4 @@ var app = {
     $('form input[type=submit]').attr('disabled', null);
   }
 };
+
